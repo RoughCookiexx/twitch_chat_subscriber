@@ -79,6 +79,7 @@ func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (s
 	log.Println("Sent subscriptions request to %s and received response code %s", callbackURL, resp.Status)
 	// Return status code (e.g., "200 OK") and nil error if successful
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		log.Println("status:", resp.Status)
 		return resp.Status, nil
 	}
 
