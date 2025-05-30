@@ -8,9 +8,28 @@ import (
 	"os"
 )
 
-func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackURL string, regexPattern string) (string, error) {
+type StringResponse struct {
+	Message string `json:"message"`
+}
+
+func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackFunction func(string), regexPattern string) (string, error) {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Received callback message")
+		bodyBytes := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Could not read request body", http.StatusBadRequest)
+			return
+		}
+		bodyStr := string(bodyBytes)
+
+		message := callbackFunction(bodyStr)
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(StringResponse{Message: message})
+	})   
 
 	targetURL, err := url.Parse(subscriptionURL)
 
