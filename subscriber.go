@@ -1,60 +1,22 @@
 package twitch_chat_subscriber
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 )
 
-// Config struct to hold the target URL from config.json
-type Config struct {
-	TargetURL string `json:"targetURL"`
-}
-
-// loadConfig reads the targetURL from config.json
-func loadConfig(filePath string) (Config, error) {
-	var config Config
-
-	configFile, err := os.Open(filePath)
-	if err != nil {
-		return config, fmt.Errorf("failed to open config file: %w", err)
-	}
-	defer configFile.Close()
-
-	byteValue, err := ioutil.ReadAll(configFile)
-	if err != nil {
-		return config, fmt.Errorf("failed to read config file: %w", err)
-	}
-
-	err = json.Unmarshal(byteValue, &config)
-	if err != nil {
-		return config, fmt.Errorf("failed to unmarshal config JSON: %w", err)
-	}
-
-	if config.TargetURL == "" {
-		return config, fmt.Errorf("targetURL not found or empty in config file")
-	}
-
-	return config, nil
-}
-
-func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (string, error) {
+func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackURL string, regexPattern string) (string, error) {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	config, err := loadConfig("config.json")
-	if err != nil {
-		log.Println("error loading config")
-		return "", fmt.Errorf("error loading configuration: %w", err)
-	}
 
-	targetURL, err := url.Parse(config.TargetURL)
+	targetURL, err := url.Parse(subscriptionURL)
+
 	if err != nil {
-		log.Println("error parsing target URL from config")
-		return "", fmt.Errorf("error parsing target URL from config: %w", err)
+		log.Println("Failed to parse target URL from string", subscriptionURL)
+		return "", fmt.Errorf("Error parsing target URL: %s", subscriptionURL)
 	}
 
 	// Prepare query parameters
