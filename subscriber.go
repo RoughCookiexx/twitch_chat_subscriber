@@ -45,11 +45,13 @@ func loadConfig(filePath string) (Config, error) {
 func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (string, error) {
 	config, err := loadConfig("config.json")
 	if err != nil {
+		log.Println("error loading config")
 		return "", fmt.Errorf("error loading configuration: %w", err)
 	}
 
 	targetURL, err := url.Parse(config.TargetURL)
 	if err != nil {
+		log.Println("error parsing target URL from config")
 		return "", fmt.Errorf("error parsing target URL from config: %w", err)
 	}
 
@@ -62,12 +64,14 @@ func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (s
 	// Send HTTP GET request
 	req, err := http.NewRequest("GET", targetURL.String(), nil)
 	if err != nil {
+		log.Println("error creating request")
 		return "", fmt.Errorf("error creating request: %w", err)
 	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println("error sending request")
 		return "", fmt.Errorf("error sending request: %w", err)
 	}
 	defer resp.Body.Close()
@@ -78,6 +82,7 @@ func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (s
 		return resp.Status, nil
 	}
 
+	log.Println("Status: ", resp.Status)
 	// Return status code and an error message for non-2xx responses
 	return resp.Status, fmt.Errorf("request failed with status: %s", resp.Status)
 }
