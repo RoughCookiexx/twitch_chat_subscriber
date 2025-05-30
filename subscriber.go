@@ -43,6 +43,8 @@ func loadConfig(filePath string) (Config, error) {
 }
 
 func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (string, error) {
+	log.SetOutput(os.Stdout)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	config, err := loadConfig("config.json")
 	if err != nil {
 		log.Println("error loading config")
