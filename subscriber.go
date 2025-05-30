@@ -42,7 +42,7 @@ func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackFunction fu
 
 	// Prepare query parameters
 	queryParams := url.Values{}
-	queryParams.Add("callbackURL", "http://0.0.0.0:6970")
+	queryParams.Add("callbackURL", "http://0.0.0.0:6970/callback")
 	queryParams.Add("filterPattern", regexPattern)
 	targetURL.RawQuery = queryParams.Encode()
 
