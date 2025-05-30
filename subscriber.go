@@ -41,9 +41,6 @@ func loadConfig(filePath string) (Config, error) {
 	return config, nil
 }
 
-// SendRequestWithCallbackAndRegex sends an HTTP GET request to a URL specified
-// in config.json, appending callbackURL and regexPattern as query parameters.
-// It returns the HTTP status code and an error message if any.
 func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (string, error) {
 	config, err := loadConfig("config.json")
 	if err != nil {
@@ -74,6 +71,7 @@ func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (s
 	}
 	defer resp.Body.Close()
 
+	fmt.Printf("Sent subscriptions request to %s and received response code %s", callbackURL, resp.Status)
 	// Return status code (e.g., "200 OK") and nil error if successful
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		return resp.Status, nil
