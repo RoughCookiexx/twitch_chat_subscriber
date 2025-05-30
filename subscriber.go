@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -71,7 +72,7 @@ func SendRequestWithCallbackAndRegex(callbackURL string, regexPattern string) (s
 	}
 	defer resp.Body.Close()
 
-	fmt.Printf("Sent subscriptions request to %s and received response code %s", callbackURL, resp.Status)
+	log.Println("Sent subscriptions request to %s and received response code %s", callbackURL, resp.Status)
 	// Return status code (e.g., "200 OK") and nil error if successful
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		return resp.Status, nil
