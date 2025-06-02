@@ -14,7 +14,7 @@ type StringResponse struct {
 	Message string `json:"message"`
 }
 
-func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackFunction func(string)(string), regexPattern string) (string, error) {
+func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackFunction func(string)(string), regexPattern string, port int) (string, error) {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
@@ -42,7 +42,7 @@ func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackFunction fu
 
 	// Prepare query parameters
 	queryParams := url.Values{}
-	queryParams.Add("callbackURL", "http://0.0.0.0:6970/callback")
+	queryParams.Add("callbackURL", fmt.Sprintf("http://0.0.0.0:%d/callback", port))
 	queryParams.Add("filterPattern", regexPattern)
 	targetURL.RawQuery = queryParams.Encode()
 
@@ -61,7 +61,7 @@ func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackFunction fu
 	}
 	defer resp.Body.Close()
 
-	log.Println("Sent subscriptions request and received response code %s", resp.Status)
+	log.Printf("Sent subscriptions request and received response code %s", resp.Status)
 	// Return status code (e.g., "200 OK") and nil error if successful
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		log.Println("status:", resp.Status)
