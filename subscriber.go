@@ -3,31 +3,34 @@ package twitch_chat_subscriber
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
+
+	"github.com/RoughCookiexx/gg_twitch_types"
 )
 
 type StringResponse struct {
 	Message string `json:"message"`
 }
 
-func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackFunction func(string)(string), regexPattern string, port int) (string, error) {
+func SendRequestWithCallbackAndRegex(subscriptionURL string, callbackFunction func(twitch_types.Message)(string), regexPattern string, port int) (string, error) {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Received callback message")
-		bodyBytes, err := io.ReadAll(r.Body)
+
+		var receivedMessage twitch_types.Message
+
+		err := json.NewDecoder(r.Body).Decode(&receivedMessage)
 		if err != nil {
-			http.Error(w, "Could not read request body", http.StatusBadRequest)
+			http.Error(w, "The JSON you sent was garbage.", http.StatusBadRequest)
 			return
 		}
-		bodyStr := string(bodyBytes)
 
-		message := callbackFunction(bodyStr)
+		message := callbackFunction(receivedMessage)
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(StringResponse{Message: message})
